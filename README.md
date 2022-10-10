@@ -32,6 +32,8 @@ HTTP and Websocket are both communication protocols.
 - Websocket: User send request -> Server accept -> This connection will establish until connection closed.
   - Websocket is bi-directional.
 
+express only handle HTTP stuff. need to integrate express with Websocket.
+
 to use websocket.
 
 `npm i ws`
