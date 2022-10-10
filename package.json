@@ -1,0 +1,10 @@
+{
+  "name": "zoom-clone-coding",
+  "version": "1.0.0",
+  "description": "Zoom clone coding",
+  "author": "Kisae Lee",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
