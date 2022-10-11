@@ -55,6 +55,8 @@ wss.on("connection", (socket) => {
 
 // SocketIO from here.
 wsServer.on("connection", (socket) => {
+  socket["nickname"] = "Anonymous"; // default user nickname.
+
   socket.onAny((event) => {
     console.log(`Socket Event:${event}`);
   });
@@ -64,8 +66,21 @@ wsServer.on("connection", (socket) => {
     socket.join(roomName);
     console.log(socket.rooms);
     func();
-    socket.to(roomName).emit("welcome");
+    socket.to(roomName).emit("welcome", `[SYSTEM] ${socket.nickname} entered!`);
   });
+
+  socket.on("disconnecting", () => {
+    socket.rooms.forEach((room) =>
+      socket.to(room).emit("bye", `[SYSTEM] ${socket.nickname} leaved!`)
+    );
+  });
+
+  socket.on("new_msg", (message, roomName, func) => {
+    socket.to(roomName).emit("new_msg", `${socket.nickname}: ${message}`);
+    func();
+  });
+
+  socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
 });
 
 httpServer.listen(3000, handleListen);
