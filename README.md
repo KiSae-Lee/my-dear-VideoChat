@@ -37,3 +37,11 @@ express only handle HTTP stuff. need to integrate express with Websocket.
 to use websocket.
 
 `npm i ws`
+
+### SocketIO
+
+SocketIO is not implementing websocket. it is a independent framework for websocket.
+
+if there is no websocket. it will use other way(HTTP long-polling).
+
+auto reconnect.

@@ -1,4 +1,4 @@
-import Websocket from "ws";
+// import Websocket from "ws"; // no longer use.
 import http from "http"; // nodejs pre-installed lib.
 import express from "express";
 
@@ -24,21 +24,35 @@ const wss = new Websocket.Server({ server }); // create websocket server.
 // anonymous function.
 // (var1, var2, ...) => { "your function here." }
 
+/* Websocket Stuff.
 // fake DB.
 const sockets = [];
 
 wss.on("connection", (socket) => {
+  // add new user to the DB.
   sockets.push(socket);
+  socket["nickname"] = "Anonymous";
+
   // connection msgs.
   console.log("Connected to the browser.");
   socket.on("close", () => {
     console.log("Disconnected from the browser.");
   });
 
-  // chatting.
+  // chatting system.
   socket.on("message", (message) => {
-    sockets.forEach((aSocket) => aSocket.send(message.toString()));
+    const parsedMsg = JSON.parse(message.toString());
+
+    switch (parsedMsg.type) {
+      case "message":
+        sockets.forEach((aSocket) =>
+          aSocket.send(`${socket.nickname}: ${parsedMsg.payload}`)
+        );
+      case "nickname":
+        socket["nickname"] = parsedMsg.payload;
+    }
   });
 });
+*/
 
 server.listen(3000, handleListen);
