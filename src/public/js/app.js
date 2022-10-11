@@ -1,3 +1,44 @@
+const socket = io(); // back-front connection.
+
+// get welcome stuff.
+const welcome = document.querySelector("#welcome");
+const welcomeForm = welcome.querySelector("form");
+
+const room = document.querySelector("#room");
+let roomName = "";
+room.hidden = true;
+
+function enterRoom() {
+  room.hidden = false;
+  welcomeForm.hidden = true;
+  const h3 = document.querySelector("h3");
+  h3.innerText = `Room ${roomName}`;
+}
+
+function addMessage(message) {
+  console.log("addMessage function called!");
+  const ul = document.querySelector("ul");
+  console.log(ul);
+  const li = document.createElement("li");
+  li.innerText = message;
+  ul.appendChild(li);
+}
+
+welcomeForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const input = welcome.querySelector("input");
+
+  socket.emit("enter_room", input.value, enterRoom);
+  roomName = input.value;
+  input.value = ""; // clear after use.
+});
+
+socket.on("welcome", () => {
+  addMessage("Someone joined!");
+});
+
+/* with websocket.
 const msgList = document.querySelector("ul");
 const nickForm = document.querySelector("#nick");
 const msgForm = document.querySelector("#msg");
@@ -37,3 +78,4 @@ nickForm.addEventListener("submit", (event) => {
   const input = nickForm.querySelector("input");
   socket.send(makeMessage("nickname", input.value));
 });
+*/

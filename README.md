@@ -45,3 +45,5 @@ SocketIO is not implementing websocket. it is a independent framework for websoc
 if there is no websocket. it will use other way(HTTP long-polling).
 
 auto reconnect.
+
+To install, `npm i socket.io`

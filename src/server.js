@@ -1,6 +1,7 @@
 // import Websocket from "ws"; // no longer use.
 import http from "http"; // nodejs pre-installed lib.
 import express from "express";
+import { Server } from "socket.io";
 
 const app = express();
 
@@ -16,15 +17,12 @@ app.get("/*", (_, res) => res.redirect("/")); // if user want to be another url.
 const handleListen = () => console.log("Listening to https://localhost:3000");
 // app.listen(3000, handleListen); // only http server.
 
-const server = http.createServer(app); // create http server.
-const wss = new Websocket.Server({ server }); // create websocket server.
-
-// now, you can handle both of servers through https://localhost:3000.
-
-// anonymous function.
-// (var1, var2, ...) => { "your function here." }
+const httpServer = http.createServer(app); // create http server.
+const wsServer = new Server(httpServer); // create socket IO.
 
 /* Websocket Stuff.
+const wss = new Websocket.Server({ server }); // create websocket server.
+// now, you can handle both of servers through https://localhost:3000.
 // fake DB.
 const sockets = [];
 
@@ -55,4 +53,19 @@ wss.on("connection", (socket) => {
 });
 */
 
-server.listen(3000, handleListen);
+// SocketIO from here.
+wsServer.on("connection", (socket) => {
+  socket.onAny((event) => {
+    console.log(`Socket Event:${event}`);
+  });
+
+  socket.on("enter_room", (roomName, func) => {
+    console.log(socket.rooms);
+    socket.join(roomName);
+    console.log(socket.rooms);
+    func();
+    socket.to(roomName).emit("welcome");
+  });
+});
+
+httpServer.listen(3000, handleListen);
