@@ -2,6 +2,7 @@
 import http from "http"; // nodejs pre-installed lib.
 import express from "express";
 import { Server } from "socket.io";
+import { instrument } from "@socket.io/admin-ui";
 
 const app = express();
 
@@ -18,7 +19,15 @@ const handleListen = () => console.log("Listening to https://localhost:3000");
 // app.listen(3000, handleListen); // only http server.
 
 const httpServer = http.createServer(app); // create http server.
-const wsServer = new Server(httpServer); // create socket IO.
+const wsServer = new Server(httpServer, {
+  cors: {
+    origin: ["https://admin.socket.io"],
+    credentials: true,
+  },
+}); // create socket IO.
+instrument(wsServer, {
+  auth: false,
+});
 
 /* Websocket Stuff.
 const wss = new Websocket.Server({ server }); // create websocket server.
@@ -75,6 +84,10 @@ function getPublicRooms() {
   return publicRooms;
 }
 
+function getUserCount(roomName) {
+  return wsServer.sockets.adapter.rooms.get(roomName)?.size;
+}
+
 // SocketIO from here.
 wsServer.on("connection", (socket) => {
   socket["nickname"] = "Anonymous"; // default user nickname.
@@ -88,13 +101,25 @@ wsServer.on("connection", (socket) => {
     socket.join(roomName);
     console.log(socket.rooms);
     func();
-    socket.to(roomName).emit("welcome", `[SYSTEM] ${socket.nickname} entered!`);
+    socket
+      .to(roomName)
+      .emit(
+        "welcome",
+        `[SYSTEM] ${socket.nickname} entered!`,
+        getUserCount(roomName)
+      );
     wsServer.sockets.emit("room_change", getPublicRooms());
   });
 
   socket.on("disconnecting", () => {
     socket.rooms.forEach((room) =>
-      socket.to(room).emit("bye", `[SYSTEM] ${socket.nickname} leaved!`)
+      socket
+        .to(room)
+        .emit(
+          "bye",
+          `[SYSTEM] ${socket.nickname} leaved!`,
+          getUserCount(room) - 1
+        )
     );
   });
 

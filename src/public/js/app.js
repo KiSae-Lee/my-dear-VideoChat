@@ -40,7 +40,6 @@ function enterRoom() {
 }
 
 function addMessage(message) {
-  console.log("addMessage function called!");
   const ul = document.querySelector("ul");
   console.log(ul);
   const li = document.createElement("li");
@@ -58,9 +57,17 @@ welcomeForm.addEventListener("submit", (event) => {
   input.value = ""; // clear after use.
 });
 
-socket.on("welcome", addMessage);
+socket.on("welcome", (message, count) => {
+  const h3 = document.querySelector("h3");
+  h3.innerText = `Room ${roomName}. User Count: ${count}`;
+  addMessage(message);
+});
 
-socket.on("bye", addMessage);
+socket.on("bye", (message, count) => {
+  const h3 = document.querySelector("h3");
+  h3.innerText = `Room ${roomName}. User Count: ${count}`;
+  addMessage(message);
+});
 
 socket.on("new_msg", addMessage);
 

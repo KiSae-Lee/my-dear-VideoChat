@@ -48,6 +48,8 @@ auto reconnect.
 
 To install, `npm i socket.io`
 
+SocketIO provides admin UI. To install `npm i @socket.io/admin-ui`
+
 ### Adapter
 
 If there are many clients, you will need multiple servers naturally. the adapter helps communication for multiple servers.
