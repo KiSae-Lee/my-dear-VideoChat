@@ -1,8 +1,28 @@
 const socket = io(); // back-front connection.
 
+//
+// Video call. based on WebRTC.
+//
+
+// Room stuff.
+const callWelcome = document.querySelector("#callWelcome");
+const callWelcomeForm = callWelcome.querySelector("form");
+const call = document.querySelector("#call");
+let videoRoomName = "";
+call.hidden = true;
+
+callWelcomeForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const input = callWelcome.querySelector("input");
+  socket.emit("join_video_room", input.value, startMedia);
+  videoRoomName = input.value;
+  input.value = "";
+});
+
 // video stuff.
 const myFace = document.querySelector("#myFace");
 let myStream;
+let myPeerConnection;
 
 const btn_mute = document.querySelector("#mute");
 const btn_camera = document.querySelector("#camera");
@@ -85,7 +105,35 @@ async function getMedia(Cam_deviceId) {
   }
 }
 
-getMedia();
+async function startMedia() {
+  call.hidden = false;
+  callWelcome.hidden = true;
+  await getMedia();
+  makeConnection();
+}
+
+// RTC.
+
+function makeConnection() {
+  myPeerConnection = new RTCPeerConnection();
+  myStream.getTracks().forEach((track) => {
+    myPeerConnection.addTrack(track, myStream);
+  });
+}
+
+// socket.
+
+socket.on("video_room_welcome", async () => {
+  const offer = await myPeerConnection.createOffer();
+  myPeerConnection.setLocalDescription(offer);
+  socket.emit("offer", offer, videoRoomName);
+});
+
+socket.on("offer", (offer) => console.log(offer));
+
+//
+// Chatting Room. based on websocket.
+//
 
 // get welcome stuff.
 const welcome = document.querySelector("#welcome");

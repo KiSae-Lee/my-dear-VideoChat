@@ -10,15 +10,22 @@ html(lang="en")
         header 
             h1 VideoChat
         main
-            div#myStream
-                video#myFace(autoplay, playsinline, width="400", height="400")
-                button#mute Mute
-                button#camera Camera Turn Off
-                select#videoInputs
+            div#callWelcome
+                form
+                    h4 Video Call Room
+                    input(type="text", placeholder="Room name", required)
+                    button Enter
+            div#call
+                div#myStream
+                    video#myFace(autoplay, playsinline, width="400", height="400")
+                    button#mute Mute
+                    button#camera Camera Turn Off
+                    select#videoInputs
             h3
             ul
             div#welcome
                 form
+                    h4 Chat Room
                     input(type="text", placeholder="Room name", required)
                     button Enter Room
                 h4 Open Rooms: 

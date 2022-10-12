@@ -58,3 +58,11 @@ If there are many clients, you will need multiple servers naturally. the adapter
 - client B -> Server B -> MyDB Adapter -> MyDB
 
 ### WebRTC
+
+Web real-time communication.
+
+Websocket is not peer-to-peer.
+
+- client -> websocket -> server -> adapter -> DB -> adapter -> server -> client (broadcasting)
+
+WebRTC is peer-to peer. direct connect to another client's browser.

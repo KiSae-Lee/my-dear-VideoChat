@@ -91,6 +91,16 @@ function getUserCount(roomName) {
 
 // SocketIO from here.
 wsServer.on("connection", (socket) => {
+  // Video room stuff.
+  socket.on("join_video_room", (VideoRoomName, func) => {
+    socket.join(VideoRoomName);
+    func();
+    socket.to(VideoRoomName).emit("video_room_welcome");
+  });
+  socket.on("offer", (offer, VideoRoomName) => {
+    socket.to(VideoRoomName).emit("offer", offer);
+  });
+  // Chatting room stuff.
   socket["nickname"] = "Anonymous"; // default user nickname.
 
   socket.onAny((event) => {
