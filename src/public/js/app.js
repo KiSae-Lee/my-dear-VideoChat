@@ -11,10 +11,11 @@ const call = document.querySelector("#call");
 let videoRoomName = "";
 call.hidden = true;
 
-callWelcomeForm.addEventListener("submit", (event) => {
+callWelcomeForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const input = callWelcome.querySelector("input");
-  socket.emit("join_video_room", input.value, startMedia);
+  await initCall();
+  socket.emit("join_video_room", input.value);
   videoRoomName = input.value;
   input.value = "";
 });
@@ -105,7 +106,7 @@ async function getMedia(Cam_deviceId) {
   }
 }
 
-async function startMedia() {
+async function initCall() {
   call.hidden = false;
   callWelcome.hidden = true;
   await getMedia();
@@ -129,7 +130,16 @@ socket.on("video_room_welcome", async () => {
   socket.emit("offer", offer, videoRoomName);
 });
 
-socket.on("offer", (offer) => console.log(offer));
+socket.on("offer", async (offer) => {
+  myPeerConnection.setRemoteDescription(offer);
+  const answer = await myPeerConnection.createAnswer();
+  myPeerConnection.setLocalDescription(answer);
+  socket.emit("answer", answer, roomName);
+});
+
+socket.on("answer", (answer) => {
+  myPeerConnection.setRemoteDescription(answer);
+});
 
 //
 // Chatting Room. based on websocket.
