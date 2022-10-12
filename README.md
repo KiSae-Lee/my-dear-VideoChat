@@ -47,3 +47,10 @@ if there is no websocket. it will use other way(HTTP long-polling).
 auto reconnect.
 
 To install, `npm i socket.io`
+
+### Adapter
+
+If there are many clients, you will need multiple servers naturally. the adapter helps communication for multiple servers.
+
+- client A -> Server A -> MyDB Adapter -> MyDB
+- client B -> Server B -> MyDB Adapter -> MyDB

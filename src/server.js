@@ -53,6 +53,28 @@ wss.on("connection", (socket) => {
 });
 */
 
+// functions for socketIO.
+function getPublicRooms() {
+  const {
+    sockets: {
+      adapter: { sids, rooms },
+    },
+  } = wsServer;
+
+  // or you can do this.
+  // const sids = wsServer.sockets.adapter.sids;
+  // const room = wsServer.sockets.adapter.rooms;
+
+  const publicRooms = [];
+  rooms.forEach((_, key) => {
+    if (sids.get(key) === undefined) {
+      publicRooms.push(key);
+    }
+  });
+
+  return publicRooms;
+}
+
 // SocketIO from here.
 wsServer.on("connection", (socket) => {
   socket["nickname"] = "Anonymous"; // default user nickname.
@@ -67,12 +89,17 @@ wsServer.on("connection", (socket) => {
     console.log(socket.rooms);
     func();
     socket.to(roomName).emit("welcome", `[SYSTEM] ${socket.nickname} entered!`);
+    wsServer.sockets.emit("room_change", getPublicRooms());
   });
 
   socket.on("disconnecting", () => {
     socket.rooms.forEach((room) =>
       socket.to(room).emit("bye", `[SYSTEM] ${socket.nickname} leaved!`)
     );
+  });
+
+  socket.on("disconnect", () => {
+    wsServer.sockets.emit("room_change", getPublicRooms());
   });
 
   socket.on("new_msg", (message, roomName, func) => {
