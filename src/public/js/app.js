@@ -1,5 +1,92 @@
 const socket = io(); // back-front connection.
 
+// video stuff.
+const myFace = document.querySelector("#myFace");
+let myStream;
+
+const btn_mute = document.querySelector("#mute");
+const btn_camera = document.querySelector("#camera");
+let mute_flag = true;
+let camera_flag = true;
+
+const sel_videoInputs = document.querySelector("#videoInputs");
+
+btn_mute.addEventListener("click", () => {
+  myStream
+    .getAudioTracks()
+    .forEach((track) => (track.enabled = !track.enabled));
+
+  if (mute_flag) {
+    btn_mute.innerText = "Sound";
+    mute_flag = false;
+  } else {
+    btn_mute.innerText = "Mute";
+    mute_flag = true;
+  }
+});
+
+btn_camera.addEventListener("click", () => {
+  myStream
+    .getVideoTracks()
+    .forEach((track) => (track.enabled = !track.enabled));
+  if (camera_flag) {
+    btn_camera.innerText = "Camera Turn Off";
+    camera_flag = false;
+  } else {
+    btn_camera.innerText = "Camera Turn On";
+    camera_flag = true;
+  }
+});
+
+sel_videoInputs.addEventListener("input", async () => {
+  await getMedia(sel_videoInputs.value);
+});
+
+async function getCameras() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const cameras = devices.filter((device) => device.kind === "videoinput");
+    const current_Cam = myStream.getVideoTracks()[0];
+    cameras.forEach((camera) => {
+      const option = document.createElement("option");
+      option.value = camera.deviceId;
+      option.innerText = camera.label;
+      if (current_Cam.label === camera.label) {
+        option.selected = true;
+      }
+      sel_videoInputs.appendChild(option);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function getMedia(Cam_deviceId) {
+  const initialConstrains = {
+    audio: true,
+    video: { facingMode: "user" },
+  };
+
+  const cameraConstrains = {
+    audio: true,
+    video: { deviceId: { exact: Cam_deviceId } },
+  };
+
+  try {
+    myStream = await navigator.mediaDevices.getUserMedia(
+      Cam_deviceId ? cameraConstrains : initialConstrains
+    );
+    myFace.srcObject = myStream;
+    if (!Cam_deviceId) {
+      await getCameras();
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+getMedia();
+
 // get welcome stuff.
 const welcome = document.querySelector("#welcome");
 const welcomeForm = welcome.querySelector("form");

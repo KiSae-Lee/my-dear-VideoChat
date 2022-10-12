@@ -56,3 +56,5 @@ If there are many clients, you will need multiple servers naturally. the adapter
 
 - client A -> Server A -> MyDB Adapter -> MyDB
 - client B -> Server B -> MyDB Adapter -> MyDB
+
+### WebRTC

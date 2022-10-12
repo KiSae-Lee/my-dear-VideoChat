@@ -9,7 +9,12 @@ html(lang="en")
     body 
         header 
             h1 VideoChat
-        main 
+        main
+            div#myStream
+                video#myFace(autoplay, playsinline, width="400", height="400")
+                button#mute Mute
+                button#camera Camera Turn Off
+                select#videoInputs
             h3
             ul
             div#welcome
