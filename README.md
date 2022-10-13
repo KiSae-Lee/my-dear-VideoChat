@@ -96,3 +96,12 @@ myPeerConnection = new RTCPeerConnection({
   ],
 });
 ```
+
+### NOT TO USE WebRTC in this circumstances
+
+- too many peers. It get slow because it is using Mesh-Architecture.
+
+How to avoid?
+
+- Use SFU(Selective forwarding Unit).
+- Use RTC DataChannel.
