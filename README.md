@@ -66,3 +66,33 @@ Websocket is not peer-to-peer.
 - client -> websocket -> server -> adapter -> DB -> adapter -> server -> client (broadcasting)
 
 WebRTC is peer-to peer. direct connect to another client's browser.
+
+### local tunnel
+
+share your server to the world. temporarily free.
+
+need to install global, `npm i -g localtunnel`
+
+### STUN
+
+allows computer find public IP.
+
+You should run your own STUN server if you want to make a service based on WebRTC.
+
+otherwise, you can use free STUN server that google provides. BUT! should not relay on this.
+
+```js
+myPeerConnection = new RTCPeerConnection({
+  iceServers: [
+    {
+      urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun3.l.google.com:19302",
+        "stun:stun4.l.google.com:19302",
+      ],
+    },
+  ],
+});
+```
