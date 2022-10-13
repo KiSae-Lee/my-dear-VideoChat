@@ -117,6 +117,14 @@ async function initCall() {
 
 function makeConnection() {
   myPeerConnection = new RTCPeerConnection();
+  myPeerConnection.addEventListener("icecandidate", (data) => {
+    socket.emit("ice", data.candidate, videoRoomName);
+  });
+  myPeerConnection.addEventListener("addstream", (data) => {
+    const peersStream = document.querySelector("#peerFace");
+    console.log(data.stream);
+    peersStream.srcObject = data.stream;
+  });
   myStream.getTracks().forEach((track) => {
     myPeerConnection.addTrack(track, myStream);
   });
@@ -139,6 +147,10 @@ socket.on("offer", async (offer) => {
 
 socket.on("answer", (answer) => {
   myPeerConnection.setRemoteDescription(answer);
+});
+
+socket.on("ice", (ice) => {
+  myPeerConnection.addIceCandidate(ice);
 });
 
 //

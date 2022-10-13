@@ -102,6 +102,9 @@ wsServer.on("connection", (socket) => {
   socket.on("answer", (answer, VideoRoomName) => {
     socket.to(VideoRoomName).emit("answer", answer);
   });
+  socket.on("ice", (ice, VideoRoomName) => {
+    socket.to(VideoRoomName).emit("ice", ice);
+  });
 
   //
   // Chatting room stuff.
